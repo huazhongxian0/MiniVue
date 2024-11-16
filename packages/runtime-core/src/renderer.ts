@@ -5,28 +5,33 @@ interface Options {
     patchProps:(el:HTMLElement,key:string,prevValue:string,nextValue:string) => void 
 }
 interface Render {
-    render: (vnode:VNode,container:HTMLElement) => void
+    render: (vnode:VNode,container:VHTMLElement) => void
+}
+function shouldSetAsProps(el:HTMLElement,key:string):Boolean{
+    return key === 'form' && el.tagName === 'INPUT' ? false : key in el
 }
 export function createRenderer(options:Options):Render{
-    console.log("createRender触发")
-    const {createElement,insert,setElementText} = options
-    function mountElement(vnode:VNode,container:HTMLElement):void{
-        const el = createElement(vnode)
-        //处理props
-        for(let key in vnode.props){
-            if(Object.prototype.hasOwnProperty.call(vnode.props,key)){
-                el.setAttribute(key,vnode.props[key])
+    const {createElement,insert,setElementText,patchProps} = options
+    //设置props
+    function setProps(el:HTMLElement,vnode:VNode):void{
+        if(vnode.props) {
+            for(const key in vnode.props){
+                patchProps(el,key,null,vnode.props[key])
             }
         }
+    }   
+    function mountElement(vnode:VNode,container:VHTMLElement):void{
+        const el = createElement(vnode)
+        setProps(el,vnode)
         //处理子类节点
         if(typeof vnode.children =='string'){
             setElementText(el,vnode.children)
-        }else if(Array.isArray(typeof vnode.children)){
-
+        }else if(Array.isArray(vnode.children)){
+            vnode.children.forEach(child => patch(null,child,el as VHTMLElement))
         }
         insert(el, container)
     }
-    function patch(n1:VNode,n2:VNode,container:HTMLElement):void{
+    function patch(n1:VNode | undefined | null,n2:VNode,container:VHTMLElement):void{
         if(!n1){
             mountElement(n2,container)
         }else{
@@ -34,7 +39,7 @@ export function createRenderer(options:Options):Render{
         }
 
     }
-    function render(vnode:VNode,container:HTMLElement):void{
+    function render(vnode:VNode,container:VHTMLElement):void{
         if(vnode){
             patch(container._vnode,vnode,container)
         }else{
@@ -55,21 +60,21 @@ export const renderer = createRenderer({
         return document.createElement(vnode.type)
     },
     insert:(el:HTMLElement,container:HTMLElement) => {
-        container.appendChild(el)
+        container.appendChild(el)   
     },
     setElementText:(el:HTMLElement,text:string) => {
         el.textContent = text
     },
-    patchProps:(el:HTMLElement,key:string,prevValue:string,nextValue:string) => {
+    patchProps:(el:HTMLElement,key:string,prevValue:string | null,nextValue:string | null) => {
         if(shouldSetAsProps(el,key)){
-            const type = typeof el[key]
+            const type = typeof el[key as keyof HTMLElement]
             if(type === 'boolean' && nextValue === ''){
                 el[key] = true
             }else{
                 el[key] = nextValue
             }
         }else{
-            el.setAttribute(key,nextValue)
+            el.setAttribute(key,nextValue as string)
         }
     }
 })
