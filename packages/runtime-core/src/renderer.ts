@@ -35,7 +35,7 @@ export function createRenderer(options:Options):Render{
     }
     //补丁函数
     function patch(n1:VNode,n2:VNode,container:HTMLElement):void{
-
+        
     }
     function render(vnode:VNode,container:HTMLElement):void{
 

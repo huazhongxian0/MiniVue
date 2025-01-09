@@ -38,7 +38,7 @@ export default {
       contentBase: 'packages/reactivity', // 提供静态文件的目录
       port: 2000,                // 端口号
     }),
-    livereload('packages')           // 热更新
+    livereload('packages')        // 热更新
   ],
   watch: {
     include: 'packages/**', // 监听的文件路径

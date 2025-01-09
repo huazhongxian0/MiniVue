@@ -28,3 +28,10 @@ tsconfig.tsbuildinfo
 # cache
 .eslintcache
 .kfc*
+
+reactivity.cjs.js.map
+reactivity.esm.js.map
+reactivity.iife.js.map
+reactivity.cjs.js
+reactivity.esm.js
+reactivity.iife.js
