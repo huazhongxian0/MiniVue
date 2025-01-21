@@ -90,7 +90,7 @@ export function reactive(data:Object){
     return nowObj
 }
 //建立浅响应
-export function shallowReactive(data:Object){
+export function shallowReactive(data:any){
     return createReactive(data,true)
 }
 export function readonly(data:Object){

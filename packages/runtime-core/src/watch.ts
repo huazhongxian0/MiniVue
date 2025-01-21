@@ -15,13 +15,14 @@ export function watch(source:any,cb:Function,options:{immediate:boolean,flush?:s
     function onInvalidate(fn:Function){
         cleanup = fn
     }
-    const job = () =>{
+    const job = () => {
         //执行副作用函数拿到新值   
         newValue = effectFn()
         //执行watch传入的函数
         if(cleanup) cleanup()
         cb(newValue,oldValue,onInvalidate)
         //把旧值更新
+        console.log('oldSet了为',oldValue.name);
         oldValue = newValue
     }
     const effectFn = effect(() => getter(),{
